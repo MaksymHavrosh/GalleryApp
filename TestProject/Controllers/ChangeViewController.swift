@@ -23,6 +23,8 @@ class ChangeViewController: UIViewController {
     var assetsImage: PHAsset?
     private var ciImage: CIImage?
     
+    //MARK: - LifeCycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         imageView.image = image
@@ -30,6 +32,12 @@ class ChangeViewController: UIViewController {
             ciImage = CIImage(image: image)
         }
     }
+    
+}
+
+//MARK: - Saving
+
+extension ChangeViewController {
     
     @IBAction func saveImage(_ sender: UIBarButtonItem) {
         guard let imageToSave = ciImage else { return }
@@ -55,67 +63,11 @@ class ChangeViewController: UIViewController {
         }
     }
     
-    @IBAction func renameImage(_ sender: UIBarButtonItem) {
-        let newView = UITextField()
-        view.addSubview(newView)
-        
-        newView.becomeFirstResponder()
-        newView.translatesAutoresizingMaskIntoConstraints = false
-        newView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -80).isActive = true
-        newView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        newView.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        newView.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        newView.backgroundColor = .yellow
-        
-        nameTextField = newView
-        
-        let button = UIButton()
-        button.setTitle("Ok", for: .normal)
-        button.addTarget(self, action: #selector(saveNewName), for: .touchUpInside)
-        view.addSubview(button)
-        
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -80).isActive = true
-        button.leadingAnchor.constraint(equalTo: view.centerXAnchor, constant: 130).isActive = true
-        button.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        button.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        button.backgroundColor = .red
-    }
-    
-    @objc func saveNewName() {
-        guard let text = nameTextField?.text, text != "" else { return }
-        
-        assetsImage?.requestContentEditingInput(with: PHContentEditingInputRequestOptions()) { (input, _) in
-            guard let input = input else { return }
-            let url = input.fullSizeImageURL
-            let newName = text + ".JPG"
-            
-            var oldURL = url
-            oldURL?.deleteLastPathComponent()
-            let newURL = oldURL?.appendingPathComponent(newName)
-            
-            guard let moveUrl = url, let moveNewURL = newURL else {
-                print("url / newUrl = nil")
-                return
-            }
-            
-            do{
-                try FileManager.default.moveItem(at: moveUrl, to: moveNewURL)
-            } catch {
-                print("moveItem \(error)")
-            }
-            
-            let result = PHContentEditingOutput(contentEditingInput: input).renderedContentURL
+}
 
-            PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: result)
-            }) { (success, error) in
-                if !success {
-                    print(error ?? "performChanges Error")
-                }
-            }
-        }
-    }
+//MARK: - Rotation image
+
+extension ChangeViewController {
     
     @IBAction func turnImage(_ sender: UIBarButtonItem) {
         ciImage = ciImage?.transformed(by: .init(rotationAngle: -.pi / 2))
@@ -191,6 +143,74 @@ extension ChangeViewController {
         
         let resultImage = UIImage(cgImage: cgImage)
         return resultImage
+    }
+    
+}
+
+//MARK: - Rename
+
+extension ChangeViewController {
+    
+    @IBAction func renameImage(_ sender: UIBarButtonItem) {
+        let newView = UITextField()
+        view.addSubview(newView)
+        
+        newView.becomeFirstResponder()
+        newView.translatesAutoresizingMaskIntoConstraints = false
+        newView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -80).isActive = true
+        newView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        newView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        newView.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        newView.backgroundColor = .yellow
+        
+        nameTextField = newView
+        
+        let button = UIButton()
+        button.setTitle("Ok", for: .normal)
+        button.addTarget(self, action: #selector(saveNewName), for: .touchUpInside)
+        view.addSubview(button)
+        
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -80).isActive = true
+        button.leadingAnchor.constraint(equalTo: view.centerXAnchor, constant: 130).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        button.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        button.backgroundColor = .red
+    }
+    
+    @objc func saveNewName() {
+        guard let text = nameTextField?.text, text != "" else { return }
+        
+        assetsImage?.requestContentEditingInput(with: PHContentEditingInputRequestOptions()) { (input, _) in
+            guard let input = input else { return }
+            let url = input.fullSizeImageURL
+            let newName = text + ".JPG"
+            
+            var oldURL = url
+            oldURL?.deleteLastPathComponent()
+            let newURL = oldURL?.appendingPathComponent(newName)
+            
+            guard let moveUrl = url, let moveNewURL = newURL else {
+                print("url / newUrl = nil")
+                return
+            }
+            
+            do{
+                try FileManager.default.moveItem(at: moveUrl, to: moveNewURL)
+            } catch {
+                print("moveItem \(error)")
+            }
+            
+            let result = PHContentEditingOutput(contentEditingInput: input).renderedContentURL
+
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: result)
+            }) { (success, error) in
+                if !success {
+                    print(error ?? "performChanges Error")
+                }
+            }
+        }
     }
     
 }

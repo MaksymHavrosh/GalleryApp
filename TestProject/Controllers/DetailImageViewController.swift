@@ -21,23 +21,64 @@ class DetailImageViewController: UIViewController {
     var photos: PHFetchResult<PHAsset>?
     var image: PHAsset?
     private var selectedImage: UIImage?
-
+    
+    //MARK: - LifeCycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         showImage()
     }
+    
+    //MARK: - Private methods
     
     func showImage() {
         guard let image = image else { return }
         
         PHImageManager.default().requestImage(for: image, targetSize: CGSize(width: 1080, height: 1080), contentMode: .aspectFill, options: nil) { (result, info) in
             
-        if let image = result {
-            self.imageView.image = image
-            self.selectedImage = image
+            if let image = result {
+                self.imageView.image = image
+                self.selectedImage = image
             }
         }
     }
+    
+    //MARK: - Segue
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? ChangeViewController, let selectedImage = selectedImage {
+            vc.image = selectedImage
+            vc.assetsImage = image
+        }
+    }
+    
+}
+
+//MARK: - Zoom
+
+extension DetailImageViewController {
+    
+    @IBAction func increaseImage(_ sender: UIBarButtonItem) {
+        
+        let currentTransform = imageView.transform
+        let newTransform = currentTransform.scaledBy(x: 1.1, y: 1.1)
+        
+        imageView.transform = newTransform
+    }
+    
+    @IBAction func reduceImage(_ sender: UIBarButtonItem) {
+        
+        let currentTransform = imageView.transform
+        let newTransform = currentTransform.scaledBy(x: 0.9, y: 0.9)
+        
+        imageView.transform = newTransform
+    }
+    
+}
+
+//MARK: - Navigation functions
+
+extension DetailImageViewController {
     
     @IBAction func NextImage(_ sender: UIBarButtonItem) {
         
@@ -78,22 +119,11 @@ class DetailImageViewController: UIViewController {
         showImage()
     }
     
-    @IBAction func increaseImage(_ sender: UIBarButtonItem) {
-        
-        let currentTransform = imageView.transform
-        let newTransform = currentTransform.scaledBy(x: 1.1, y: 1.1)
-        
-        imageView.transform = newTransform
-        
-    }
-    
-    @IBAction func reduceImage(_ sender: UIBarButtonItem) {
-        
-        let currentTransform = imageView.transform
-        let newTransform = currentTransform.scaledBy(x: 0.9, y: 0.9)
-        
-        imageView.transform = newTransform
-    }
+}
+
+//MARK: - Gestures
+
+extension DetailImageViewController {
     
     @IBAction func imageTapped(_ sender: UILongPressGestureRecognizer) {
         fullScreenImageView.isHidden = false
@@ -111,13 +141,6 @@ class DetailImageViewController: UIViewController {
         
         navigationController?.isNavigationBarHidden = false
         toolbar.isHidden = false
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? ChangeViewController, let selectedImage = selectedImage {
-            vc.image = selectedImage
-            vc.assetsImage = image
-        }
     }
     
 }

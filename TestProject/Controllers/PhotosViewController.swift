@@ -17,6 +17,8 @@ class PhotosViewController: UICollectionViewController {
     
     private let sectionInsets = UIEdgeInsets(top: 30.0, left: 10.0, bottom: 30.0, right: 10.0)
     private let itemsPerRow: CGFloat = 3
+    
+    //MARK: - LifeCycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,34 +39,7 @@ class PhotosViewController: UICollectionViewController {
         collectionView.reloadData()
     }
     
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        photos?.count ?? 0
-    }
-    
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CollectionViewCell.self), for: indexPath) as! CollectionViewCell
-        
-        if let asset = photos?[indexPath.row] {
-            PHImageManager.default().requestImage(for: asset, targetSize: CGSize(width: 720, height: 720), contentMode: .aspectFill, options: nil) { (result, info) in
-                
-                if let image = result {
-                    cell.image.image = image
-                    
-                    asset.requestContentEditingInput(with: PHContentEditingInputRequestOptions()) { (input, _) in
-                    let url = input?.fullSizeImageURL
-                        cell.nameLabel.text = url?.lastPathComponent
-                    }
-                }
-            }
-        }
-        return cell
-    }
-    
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        selectedImage = photos?[indexPath.row]
-        
-        self.performSegue(withIdentifier: "ShowSelectImage", sender: nil)
-    }
+    //MARK: - Segue
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? DetailImageViewController, let selectedImage = selectedImage { 
@@ -73,6 +48,41 @@ class PhotosViewController: UICollectionViewController {
             vc.assetCollection = assetCollection
         }
     }
+    
+}
+
+//MARK: - UICollectionViewDataSource
+
+extension PhotosViewController {
+       
+       override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+           photos?.count ?? 0
+       }
+       
+       override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+           let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CollectionViewCell.self), for: indexPath) as! CollectionViewCell
+           
+           if let asset = photos?[indexPath.row] {
+               PHImageManager.default().requestImage(for: asset, targetSize: CGSize(width: 720, height: 720), contentMode: .aspectFill, options: nil) { (result, info) in
+                   
+                   if let image = result {
+                       cell.image.image = image
+                       
+                       asset.requestContentEditingInput(with: PHContentEditingInputRequestOptions()) { (input, _) in
+                       let url = input?.fullSizeImageURL
+                           cell.nameLabel.text = url?.lastPathComponent
+                       }
+                   }
+               }
+           }
+           return cell
+       }
+       
+       override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+           selectedImage = photos?[indexPath.row]
+           
+           self.performSegue(withIdentifier: "ShowSelectImage", sender: nil)
+       }
     
 }
 
