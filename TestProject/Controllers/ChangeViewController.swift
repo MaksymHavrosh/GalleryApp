@@ -16,20 +16,22 @@ class ChangeViewController: UIViewController {
     @IBOutlet weak var savingIndicator: UIActivityIndicatorView!
     
     var image: UIImage?
-    var nameTextField: UITextField?
+    private var nameTextField: UITextField?
     
-    var currentFilter = "CISepiaTone"
+    private var currentFilter = "CISepiaTone"
     
     var assetsImage: PHAsset?
-    var ciImage: CIImage?
+    private var ciImage: CIImage?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         imageView.image = image
-        ciImage = CIImage(image: imageView.image!)
+        if let image = imageView.image {
+            ciImage = CIImage(image: image)
+        }
     }
     
-    @IBAction func saveImage(_ sender: UIButton) {
+    @IBAction func saveImage(_ sender: UIBarButtonItem) {
         guard let imageToSave = ciImage else { return }
         savingIndicator.startAnimating()
          
@@ -48,7 +50,8 @@ class ChangeViewController: UIViewController {
             present(alert, animated: true)
             
         } else {
-            navigationController?.popToRootViewController(animated: true)
+            guard let vc = navigationController?.viewControllers[1] else { return }
+            navigationController?.popToViewController(vc, animated: false)
         }
     }
     
@@ -77,23 +80,54 @@ class ChangeViewController: UIViewController {
         button.heightAnchor.constraint(equalToConstant: 30).isActive = true
         button.widthAnchor.constraint(equalToConstant: 30).isActive = true
         button.backgroundColor = .red
-        
     }
     
     @objc func saveNewName() {
+        guard let text = nameTextField?.text, text != "" else { return }
         
-        guard nameTextField?.text != "" else { return }
-        
-        
+        assetsImage?.requestContentEditingInput(with: PHContentEditingInputRequestOptions()) { (input, _) in
+            guard let input = input else { return }
+            let url = input.fullSizeImageURL
+            let newName = text + ".JPG"
+            
+            var oldURL = url
+            oldURL?.deleteLastPathComponent()
+            let newURL = oldURL?.appendingPathComponent(newName)
+            
+            guard let moveUrl = url, let moveNewURL = newURL else {
+                print("url / newUrl = nil")
+                return
+            }
+            
+            do{
+                try FileManager.default.moveItem(at: moveUrl, to: moveNewURL)
+            } catch {
+                print("moveItem \(error)")
+            }
+            
+            let result = PHContentEditingOutput(contentEditingInput: input).renderedContentURL
+
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: result)
+            }) { (success, error) in
+                if !success {
+                    print(error ?? "performChanges Error")
+                }
+            }
+        }
     }
     
     @IBAction func turnImage(_ sender: UIBarButtonItem) {
         ciImage = ciImage?.transformed(by: .init(rotationAngle: -.pi / 2))
         
-        let context = CIContext(options: nil)
-        let cgImage = context.createCGImage(ciImage!, from: ciImage!.extent)!
+        guard let ciImage = ciImage else { return }
         
-        imageView.image = UIImage(cgImage: cgImage)
+        let context = CIContext(options: nil)
+        let cgImage = context.createCGImage(ciImage, from: ciImage.extent)
+        
+        if let image = cgImage {
+            imageView.image = UIImage(cgImage: image)
+        }
     }
     
     func rotationView(viewRotate: UIView, angleRotate: CGFloat) {
@@ -117,36 +151,43 @@ extension ChangeViewController {
     
     @IBAction func sepiaSelected(_ sender: UIBarButtonItem) {
         currentFilter = "CISepiaTone"
-        if imageView.image != nil {
-            imageView.image = addFilter(inputImage: imageView.image!, orientation: nil)
+        if let image = imageView.image {
+            imageView.image = addFilter(inputImage: image)
         }
     }
     
     @IBAction func monoSelected(_ sender: UIBarButtonItem) {
         currentFilter = "CIPhotoEffectMono"
-        if imageView.image != nil {
-            imageView.image = addFilter(inputImage: imageView.image!, orientation: nil)
+        if let image = imageView.image {
+            imageView.image = addFilter(inputImage: image)
         }
     }
     
     @IBAction func invertSelected(_ sender: UIBarButtonItem) {
         currentFilter = "CIComicEffect"
-        if imageView.image != nil {
-            imageView.image = addFilter(inputImage: imageView.image!, orientation: nil)
+        if let image = imageView.image {
+            imageView.image = addFilter(inputImage: image)
         }
     }
     
-    func addFilter(inputImage: UIImage, orientation: Int32?) -> UIImage? {
+    func addFilter(inputImage: UIImage) -> UIImage? {
         let cimage = ciImage
         
         let filter = CIFilter(name: currentFilter)
         filter?.setDefaults()
         filter?.setValue(cimage, forKey: "inputImage")
         
-        let ciFiltredImage = filter?.outputImage
+        guard let ciFiltredImage = filter?.outputImage else {
+            print("addFilter error (ciFiltredImage)")
+            return nil
+        }
         ciImage = ciFiltredImage
         let context = CIContext(options: nil)
-        let cgImage = context.createCGImage(ciFiltredImage!, from: ciFiltredImage!.extent)!
+        
+        guard let cgImage = context.createCGImage(ciFiltredImage, from: ciFiltredImage.extent) else {
+            print("addFilter error (cgImage)")
+            return nil
+        }
         
         let resultImage = UIImage(cgImage: cgImage)
         return resultImage

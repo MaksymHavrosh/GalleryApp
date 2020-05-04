@@ -12,10 +12,15 @@ import Photos
 class DetailImageViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var fullScreenImageView: UIImageView!
+    @IBOutlet weak var previousButton: UIBarButtonItem!
+    @IBOutlet weak var nextButton: UIBarButtonItem!
+    @IBOutlet weak var toolbar: UIToolbar!
+    
     var assetCollection: PHAssetCollection?
     var photos: PHFetchResult<PHAsset>?
     var image: PHAsset?
-    var selectedImage: UIImage?
+    private var selectedImage: UIImage?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,7 +44,14 @@ class DetailImageViewController: UIViewController {
         guard let photos = photos, let image = image else { return }
         let index = photos.index(of: image) + 1
         
-        guard index < photos.count, index >= 0 else { return }
+        guard index < photos.count, index >= 0 else {
+            sender.isEnabled = false
+            return
+        }
+        
+        if previousButton.isEnabled == false {
+            previousButton.isEnabled = true
+        }
         self.image = photos[index]
         
         imageView.transform = CGAffineTransform.identity
@@ -51,7 +63,15 @@ class DetailImageViewController: UIViewController {
         guard let photos = photos, let image = image else { return }
         let index = photos.index(of: image) - 1
         
-        guard index < photos.count, index >= 0  else { return }
+        guard index < photos.count, index >= 0  else {
+            sender.isEnabled = false
+            return
+        }
+        
+        if nextButton.isEnabled == false {
+            nextButton.isEnabled = true
+        }
+        
         self.image = photos[index]
         
         imageView.transform = CGAffineTransform.identity
@@ -76,32 +96,21 @@ class DetailImageViewController: UIViewController {
     }
     
     @IBAction func imageTapped(_ sender: UILongPressGestureRecognizer) {
-        let imageView = sender.view as! UIImageView
-        let newImageView = UIImageView(image: imageView.image)
-        view.addSubview(newImageView)
+        fullScreenImageView.isHidden = false
+        fullScreenImageView.backgroundColor = .black
+        fullScreenImageView.image = selectedImage
         
-        newImageView.translatesAutoresizingMaskIntoConstraints = false
-        newImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        newImageView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        newImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        newImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        
-        newImageView.backgroundColor = .black
-        newImageView.contentMode = .scaleAspectFit
-        newImageView.isUserInteractionEnabled = true
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissFullscreenImage))
-        newImageView.addGestureRecognizer(tap)
-        
-        self.view.addSubview(newImageView)
-        self.navigationController?.isNavigationBarHidden = true
-        self.tabBarController?.tabBar.isHidden = true
+        navigationController?.isNavigationBarHidden = true
+        toolbar.isHidden = true
     }
-
-    @objc func dismissFullscreenImage(_ sender: UITapGestureRecognizer) {
-        self.navigationController?.isNavigationBarHidden = false
-        self.tabBarController?.tabBar.isHidden = false
-        sender.view?.removeFromSuperview()
+    
+    @IBAction func dismissFullscreenImage(_ sender: UITapGestureRecognizer) {
+        fullScreenImageView.isHidden = true
+        fullScreenImageView.backgroundColor = .gray
+        fullScreenImageView.image = nil
+        
+        navigationController?.isNavigationBarHidden = false
+        toolbar.isHidden = false
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

@@ -16,13 +16,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Перо" translatesAutoresizingMaskIntoConstraints="NO" id="WwB-up-mXZ">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <rect key="frame" x="20" y="44" width="374" height="722"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="WwB-up-mXZ" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" id="BsA-HW-ob4"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="WwB-up-mXZ" secondAttribute="bottom" id="TQh-2D-rnf"/>
+                            <constraint firstItem="WwB-up-mXZ" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.903382" id="aYB-da-0Uy"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="WwB-up-mXZ" secondAttribute="bottom" constant="96" id="juq-sT-BXk"/>
                             <constraint firstItem="WwB-up-mXZ" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="kYM-jV-gXh"/>
                             <constraint firstItem="WwB-up-mXZ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="xDT-WV-1n2"/>
                         </constraints>
