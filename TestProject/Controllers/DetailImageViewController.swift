@@ -11,11 +11,11 @@ import Photos
 
 class DetailImageViewController: UIViewController {
     
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var fullScreenImageView: UIImageView!
-    @IBOutlet weak var previousButton: UIBarButtonItem!
-    @IBOutlet weak var nextButton: UIBarButtonItem!
-    @IBOutlet weak var toolbar: UIToolbar!
+    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet private weak var fullScreenImageView: UIImageView!
+    @IBOutlet private weak var previousButton: UIBarButtonItem!
+    @IBOutlet private weak var nextButton: UIBarButtonItem!
+    @IBOutlet private weak var toolbar: UIToolbar!
     
     var assetCollection: PHAssetCollection?
     var photos: PHFetchResult<PHAsset>?
@@ -31,7 +31,7 @@ class DetailImageViewController: UIViewController {
     
     //MARK: - Private methods
     
-    func showImage() {
+    private func showImage() {
         guard let image = image else { return }
         
         PHImageManager.default().requestImage(for: image, targetSize: CGSize(width: 1080, height: 1080), contentMode: .aspectFill, options: nil) { (result, info) in
@@ -56,7 +56,7 @@ class DetailImageViewController: UIViewController {
 
 //MARK: - Zoom
 
-extension DetailImageViewController {
+private extension DetailImageViewController {
     
     @IBAction func increaseImage(_ sender: UIBarButtonItem) {
         
@@ -78,7 +78,7 @@ extension DetailImageViewController {
 
 //MARK: - Navigation functions
 
-extension DetailImageViewController {
+private extension DetailImageViewController {
     
     @IBAction func NextImage(_ sender: UIBarButtonItem) {
         
@@ -123,7 +123,7 @@ extension DetailImageViewController {
 
 //MARK: - Gestures
 
-extension DetailImageViewController {
+private extension DetailImageViewController {
     
     @IBAction func imageTapped(_ sender: UILongPressGestureRecognizer) {
         fullScreenImageView.isHidden = false

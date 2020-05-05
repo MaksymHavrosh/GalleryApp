@@ -12,8 +12,8 @@ import AssetsLibrary
 
 class ChangeViewController: UIViewController {
     
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var savingIndicator: UIActivityIndicatorView!
+    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet private weak var savingIndicator: UIActivityIndicatorView!
     
     var image: UIImage?
     private var nameTextField: UITextField?
@@ -37,7 +37,7 @@ class ChangeViewController: UIViewController {
 
 //MARK: - Saving
 
-extension ChangeViewController {
+private extension ChangeViewController {
     
     @IBAction func saveImage(_ sender: UIBarButtonItem) {
         guard let imageToSave = ciImage else { return }
@@ -67,7 +67,7 @@ extension ChangeViewController {
 
 //MARK: - Rotation image
 
-extension ChangeViewController {
+private extension ChangeViewController {
     
     @IBAction func turnImage(_ sender: UIBarButtonItem) {
         ciImage = ciImage?.transformed(by: .init(rotationAngle: -.pi / 2))
@@ -99,7 +99,7 @@ extension ChangeViewController {
 
 //MARK: - Filters
 
-extension ChangeViewController {
+private extension ChangeViewController {
     
     @IBAction func sepiaSelected(_ sender: UIBarButtonItem) {
         currentFilter = "CISepiaTone"
@@ -149,7 +149,7 @@ extension ChangeViewController {
 
 //MARK: - Rename
 
-extension ChangeViewController {
+private extension ChangeViewController {
     
     @IBAction func renameImage(_ sender: UIBarButtonItem) {
         let newView = UITextField()

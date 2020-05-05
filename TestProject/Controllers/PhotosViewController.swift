@@ -26,17 +26,47 @@ class PhotosViewController: UICollectionViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        let collection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: nil)
         
-        if let firstObject = collection.firstObject {
-            assetCollection = firstObject
-            
-            guard let assetCollection = assetCollection else { return }
-            photos = PHAsset.fetchAssets(in: assetCollection, options: nil)
-        } else {
-            print("nothing found")
+        PHPhotoLibrary.requestAuthorization { status in
+            switch status {
+            case .authorized:
+                let fetchOptions = PHFetchOptions()
+                self.photos = PHAsset.fetchAssets(with: .image, options: fetchOptions)
+                
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
+            case .denied:
+                DispatchQueue.main.async {
+                    self.showNoAccessAlert()
+                }
+            case .restricted:
+                print("restricted")
+            case .notDetermined:
+                print("Not determined yet")
+            @unknown default:
+                fatalError("fatalError in PhotosViewController (viewWillAppear)")
+            }
         }
-        collectionView.reloadData()
+    }
+    
+    //MARK: - Private
+    
+    private func showNoAccessAlert() {
+        let alert = UIAlertController(title: NSLocalizedString("No Photo Access", comment: ""),
+                                      message: "Please grant Stitch photo access in Settings -> Privacy",
+                                      preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (_) in
+            alert.dismiss(animated: true)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Settings", style: .default, handler: { _ in
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url, options: [:])
+            }
+        }))
+        self.present(alert, animated: true)
     }
     
     //MARK: - Segue
@@ -55,34 +85,34 @@ class PhotosViewController: UICollectionViewController {
 
 extension PhotosViewController {
        
-       override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-           photos?.count ?? 0
-       }
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        photos?.count ?? 0
+    }
        
-       override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-           let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CollectionViewCell.self), for: indexPath) as! CollectionViewCell
-           
-           if let asset = photos?[indexPath.row] {
-               PHImageManager.default().requestImage(for: asset, targetSize: CGSize(width: 720, height: 720), contentMode: .aspectFill, options: nil) { (result, info) in
-                   
-                   if let image = result {
-                       cell.image.image = image
-                       
-                       asset.requestContentEditingInput(with: PHContentEditingInputRequestOptions()) { (input, _) in
-                       let url = input?.fullSizeImageURL
-                           cell.nameLabel.text = url?.lastPathComponent
-                       }
-                   }
-               }
-           }
-           return cell
-       }
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CollectionViewCell.self), for: indexPath) as! CollectionViewCell
+        
+        if let asset = photos?[indexPath.row] {
+            PHImageManager.default().requestImage(for: asset, targetSize: cell.image.frame.size, contentMode: .aspectFill, options: nil) { (result, info) in
+                
+                if let image = result {
+                    cell.image.image = image
+                    cell.nameLabel.text = "   "
+                    
+                    asset.requestContentEditingInput(with: PHContentEditingInputRequestOptions()) { (input, _) in
+                        let url = input?.fullSizeImageURL
+                        cell.nameLabel.text = url?.lastPathComponent
+                    }
+                }
+            }
+        }
+        return cell
+    }
        
-       override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-           selectedImage = photos?[indexPath.row]
-           
-           self.performSegue(withIdentifier: "ShowSelectImage", sender: nil)
-       }
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selectedImage = photos?[indexPath.row]
+        self.performSegue(withIdentifier: "ShowSelectImage", sender: nil)
+    }
     
 }
 
@@ -93,9 +123,12 @@ extension PhotosViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let guide = view.safeAreaLayoutGuide
+        let width = guide.layoutFrame.size.width
 
         let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
-        let availableWidth = view.frame.width - paddingSpace
+        let availableWidth = width - paddingSpace
         let widthPerItem = availableWidth / itemsPerRow
 
         return CGSize(width: widthPerItem, height: widthPerItem)

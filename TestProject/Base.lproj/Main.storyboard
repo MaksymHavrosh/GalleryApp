@@ -84,7 +84,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="5" minimumInteritemSpacing="5" id="dtm-sH-ELo">
+                        <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="5" minimumInteritemSpacing="5" sectionInsetReference="safeArea" id="dtm-sH-ELo">
                             <size key="itemSize" width="126" height="128"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
@@ -98,24 +98,26 @@
                                     <rect key="frame" x="0.0" y="0.0" width="126" height="128"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UGy-wu-BwV">
-                                            <rect key="frame" x="8" y="107" width="110" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="5HA-aR-ZgD"/>
-                                                <constraint firstAttribute="width" constant="110" id="6JJ-Dg-vCI"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Перо" id="5yQ-DS-gry">
+                                            <rect key="frame" x="0.0" y="0.0" width="126" height="128"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="      " lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="15" id="UGy-wu-BwV">
+                                            <rect key="frame" x="2" y="107" width="122" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
+                                            <color key="backgroundColor" systemColor="systemGray3Color" red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="28"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5yQ-DS-gry">
-                                            <rect key="frame" x="0.0" y="0.0" width="126" height="107"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                        </imageView>
                                     </subviews>
                                     <color key="backgroundColor" systemColor="systemGray6Color" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <constraints>
-                                        <constraint firstItem="UGy-wu-BwV" firstAttribute="leading" secondItem="bDR-l8-vcK" secondAttribute="leading" constant="8" id="NTI-g6-fkc"/>
+                                        <constraint firstItem="5yQ-DS-gry" firstAttribute="top" secondItem="bDR-l8-vcK" secondAttribute="top" id="1Bd-EG-8LZ"/>
+                                        <constraint firstItem="UGy-wu-BwV" firstAttribute="leading" secondItem="bDR-l8-vcK" secondAttribute="leading" constant="2" id="78i-cL-9fW"/>
+                                        <constraint firstAttribute="trailing" secondItem="5yQ-DS-gry" secondAttribute="trailing" id="FJD-Bf-WO0"/>
+                                        <constraint firstItem="5yQ-DS-gry" firstAttribute="leading" secondItem="bDR-l8-vcK" secondAttribute="leading" id="Riu-6r-yWg"/>
+                                        <constraint firstAttribute="bottom" secondItem="5yQ-DS-gry" secondAttribute="bottom" id="sBp-cj-vA5"/>
                                         <constraint firstAttribute="bottom" secondItem="UGy-wu-BwV" secondAttribute="bottom" id="wHa-aS-Igw"/>
                                     </constraints>
                                 </collectionViewCellContentView>
