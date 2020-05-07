@@ -15,10 +15,13 @@ class DetailImageViewController: UIViewController {
     @IBOutlet private weak var fullScreenImageView: UIImageView!
     @IBOutlet private weak var previousButton: UIBarButtonItem!
     @IBOutlet private weak var nextButton: UIBarButtonItem!
+    @IBOutlet private weak var increaseButton: UIBarButtonItem!
+    @IBOutlet private weak var reduceButton: UIBarButtonItem!
     @IBOutlet private weak var toolbar: UIToolbar!
     
     var assetCollection: PHAssetCollection?
     var photos: PHFetchResult<PHAsset>?
+    var touchOfSet = CGPoint()
     var image: PHAsset?
     private var selectedImage: UIImage?
     
@@ -59,6 +62,11 @@ class DetailImageViewController: UIViewController {
 private extension DetailImageViewController {
     
     @IBAction func increaseImage(_ sender: UIBarButtonItem) {
+        if imageView.frame.width > view.frame.width * 2 {
+            increaseButton.isEnabled = false
+            return
+        }
+        reduceButton.isEnabled = true
         
         let currentTransform = imageView.transform
         let newTransform = currentTransform.scaledBy(x: 1.1, y: 1.1)
@@ -67,11 +75,63 @@ private extension DetailImageViewController {
     }
     
     @IBAction func reduceImage(_ sender: UIBarButtonItem) {
+        if imageView.frame.width < view.frame.width / 2 {
+            reduceButton.isEnabled = false
+            return
+        }
+        increaseButton.isEnabled = true
         
+        if imageView.frame.width < view.frame.width {
+            UIView.animate(withDuration: 0.5) {
+                self.imageView.center = CGPoint(x: self.view.center.x, y: self.view.center.y)
+            }
+        }
         let currentTransform = imageView.transform
         let newTransform = currentTransform.scaledBy(x: 0.9, y: 0.9)
         
         imageView.transform = newTransform
+    }
+    
+}
+
+//MARK: - Touches
+
+extension DetailImageViewController {
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        guard let touch = touches.first else { return }
+        let touchPoint = touch.location(in: imageView)
+        touchOfSet = CGPoint(x: imageView.bounds.midX - touchPoint.x, y: imageView.bounds.midY - touchPoint.y)
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        guard let touch = touches.first else { return }
+        guard imageView.frame.width > view.frame.width || imageView.frame.height > view.frame.height else { return }
+        
+        let pointOnMainView = touch.location(in: view)
+        let correction = CGPoint(x: pointOnMainView.x + touchOfSet.x, y: pointOnMainView.y + touchOfSet.y)
+        
+        imageView.center = correction
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onTouchesEnded()
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onTouchesEnded()
+    }
+    
+    func onTouchesEnded() {
+        if imageView.center.x < view.frame.minX || imageView.center.x > view.frame.maxX ||
+            imageView.center.y < view.frame.minY || imageView.center.y > view.frame.maxY {
+            
+            UIView.animate(withDuration: 0.2) {
+                self.imageView.center = CGPoint(x: self.view.center.x, y: self.view.center.y)
+            }
+        }
     }
     
 }
@@ -128,6 +188,7 @@ private extension DetailImageViewController {
     @IBAction func imageTapped(_ sender: UILongPressGestureRecognizer) {
         fullScreenImageView.isHidden = false
         fullScreenImageView.backgroundColor = .black
+        view.bringSubviewToFront(fullScreenImageView)
         fullScreenImageView.image = selectedImage
         
         navigationController?.isNavigationBarHidden = true
@@ -137,6 +198,8 @@ private extension DetailImageViewController {
     @IBAction func dismissFullscreenImage(_ sender: UITapGestureRecognizer) {
         fullScreenImageView.isHidden = true
         fullScreenImageView.backgroundColor = .gray
+        view.bringSubviewToFront(imageView)
+        view.bringSubviewToFront(toolbar)
         fullScreenImageView.image = nil
         
         navigationController?.isNavigationBarHidden = false

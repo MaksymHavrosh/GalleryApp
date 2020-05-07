@@ -158,13 +158,6 @@
                                     <outletCollection property="gestureRecognizers" destination="8Ti-zG-m8c" appends="YES" id="wx1-5y-vWf"/>
                                 </connections>
                             </imageView>
-                            <imageView hidden="YES" clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sz3-CI-R75">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                                <gestureRecognizers/>
-                                <connections>
-                                    <outletCollection property="gestureRecognizers" destination="VOX-25-bqc" appends="YES" id="tgb-vR-wrd"/>
-                                </connections>
-                            </imageView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VcD-QB-eGd">
                                 <rect key="frame" x="0.0" y="813" width="414" height="49"/>
                                 <constraints>
@@ -199,6 +192,13 @@
                                     <barButtonItem width="42" style="plain" systemItem="fixedSpace" id="Ec7-AW-A5Y"/>
                                 </items>
                             </toolbar>
+                            <imageView hidden="YES" clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sz3-CI-R75">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="VOX-25-bqc" appends="YES" id="tgb-vR-wrd"/>
+                                </connections>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
@@ -226,8 +226,10 @@
                     <connections>
                         <outlet property="fullScreenImageView" destination="sz3-CI-R75" id="J54-C5-GEF"/>
                         <outlet property="imageView" destination="BKd-ks-Q7C" id="Crx-zQ-C9O"/>
+                        <outlet property="increaseButton" destination="07b-Kl-xjT" id="eYa-gE-S5x"/>
                         <outlet property="nextButton" destination="LKA-In-4em" id="gpb-Tj-GPh"/>
                         <outlet property="previousButton" destination="FG2-XE-xZ0" id="hVw-M8-HDN"/>
+                        <outlet property="reduceButton" destination="D1y-Tl-yeV" id="LpZ-gI-wHs"/>
                         <outlet property="toolbar" destination="VcD-QB-eGd" id="MM7-jr-NrU"/>
                     </connections>
                 </viewController>
