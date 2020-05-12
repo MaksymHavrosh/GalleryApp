@@ -23,7 +23,12 @@ class DetailImageViewController: UIViewController {
     var photos: PHFetchResult<PHAsset>?
     var touchOfSet = CGPoint()
     var image: PHAsset?
-    private var selectedImage: UIImage?
+    private var selectedImage: UIImage? {
+        didSet {
+            imageView.image = selectedImage
+            fullScreenImageView.image = selectedImage
+        }
+    }
     
     //MARK: - LifeCycle
     
@@ -40,7 +45,6 @@ class DetailImageViewController: UIViewController {
         PHImageManager.default().requestImage(for: image, targetSize: CGSize(width: 1080, height: 1080), contentMode: .aspectFill, options: nil) { (result, info) in
             
             if let image = result {
-                self.imageView.image = image
                 self.selectedImage = image
             }
         }
@@ -187,23 +191,12 @@ private extension DetailImageViewController {
     
     @IBAction func imageTapped(_ sender: UILongPressGestureRecognizer) {
         fullScreenImageView.isHidden = false
-        fullScreenImageView.backgroundColor = .black
-        view.bringSubviewToFront(fullScreenImageView)
-        fullScreenImageView.image = selectedImage
-        
         navigationController?.isNavigationBarHidden = true
-        toolbar.isHidden = true
     }
     
     @IBAction func dismissFullscreenImage(_ sender: UITapGestureRecognizer) {
         fullScreenImageView.isHidden = true
-        fullScreenImageView.backgroundColor = .gray
-        view.bringSubviewToFront(imageView)
-        view.bringSubviewToFront(toolbar)
-        fullScreenImageView.image = nil
-        
         navigationController?.isNavigationBarHidden = false
-        toolbar.isHidden = false
     }
     
 }

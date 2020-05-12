@@ -70,15 +70,13 @@ private extension ChangeViewController {
 private extension ChangeViewController {
     
     @IBAction func turnImage(_ sender: UIBarButtonItem) {
-        ciImage = ciImage?.transformed(by: .init(rotationAngle: -.pi / 2))
-        
         guard let ciImage = ciImage else { return }
-        
+        self.ciImage = ciImage.transformed(by: .init(rotationAngle: -.pi / 2))
+                
         let context = CIContext(options: nil)
-        let cgImage = context.createCGImage(ciImage, from: ciImage.extent)
         
-        if let image = cgImage {
-            imageView.image = UIImage(cgImage: image)
+        if let cgImage = context.createCGImage(ciImage, from: ciImage.extent) {
+            imageView.image = UIImage(cgImage: cgImage)
         }
     }
     
@@ -123,11 +121,9 @@ private extension ChangeViewController {
     }
     
     func addFilter(inputImage: UIImage) -> UIImage? {
-        let cimage = ciImage
-        
         let filter = CIFilter(name: currentFilter)
         filter?.setDefaults()
-        filter?.setValue(cimage, forKey: "inputImage")
+        filter?.setValue(ciImage, forKey: "inputImage")
         
         guard let ciFiltredImage = filter?.outputImage else {
             print("addFilter error (ciFiltredImage)")
